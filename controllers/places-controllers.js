@@ -68,6 +68,24 @@ const createPlace = (req, res, next) => {
   res.status(201).json({ place: createdPlace });
 };
 
+const updatePlaceById = (req, res, next) => {
+  const { title, description } = req.body;
+  const placeId = req.params.pid; // pid is the name of the parameter {/:pid}
+
+  const updatedPlace = { ...DUMMY_PLACES.find((p) => p.id === placeId) }; // copy the object
+  const placeIndex = DUMMY_PLACES.findIndex((p) => p.id === placeId); // find the index of the object
+  updatedPlace.title = title; // update the object
+  updatedPlace.description = description; // update the object
+
+  DUMMY_PLACES[placeIndex] = updatedPlace; // update the dummy data
+
+  res.status(200).json({ place: updatedPlace }); // return the updated object
+};
+
+const deletePlaceById = (req, res, next) => {};
+
 exports.getPlaceById = getPlaceById;
 exports.getPlaceByUserId = getPlaceByUserId;
 exports.createPlace = createPlace;
+exports.updatePlaceById = updatePlaceById;
+exports.deletePlaceById = deletePlaceById;

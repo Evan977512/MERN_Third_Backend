@@ -10,5 +10,10 @@ router.get("/user/:uid", placesControllers.getPlaceByUserId);
 
 router.post("/", placesControllers.createPlace);
 
+// patch is for updating a resource
+router.patch("/:pid", placesControllers.updatePlaceById);
+
+router.delete("/:pid", placesControllers.deletePlaceById);
+
 // how to link to App.js??
 module.exports = router;
