@@ -53,11 +53,9 @@ const getPlacesByUserId = (req, res, next) => {
 };
 
 const createPlace = (req, res, next) => {
-  // validationResult function will look into this request and check if there are any errors.
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
-    console.log(errors);
+    // console.log(errors);
     throw new HttpError("Invalid inputs passed, please check your data.", 422);
   }
 
@@ -78,6 +76,12 @@ const createPlace = (req, res, next) => {
 };
 
 const updatePlaceById = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // console.log(errors);
+    throw new HttpError("Invalid inputs passed, please check your data.", 422);
+  }
+
   const { title, description } = req.body;
   const placeId = req.params.pid; // pid is the name of the parameter {/:pid}
 
