@@ -97,6 +97,12 @@ const updatePlaceById = (req, res, next) => {
 
 const deletePlaceById = (req, res, next) => {
   const placeId = req.params.pid;
+
+  // function that throws an error if the placeId is not found
+  if (!DUMMY_PLACES.find((p) => p.id === placeId)) {
+    throw new HttpError("Could not find a place for that id", 404);
+  }
+
   console.log("placeId: ", placeId);
   // filter() returns a new array with the elements that pass the test implemented by the provided function.
   DUMMY_PLACES = DUMMY_PLACES.filter((p) => p.id !== placeId);
