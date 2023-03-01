@@ -3,6 +3,7 @@ const uuid = require("uuid");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
+const getCoordsForAddress = require("../util/location");
 
 let DUMMY_PLACES = [
   {
@@ -52,14 +53,27 @@ const getPlacesByUserId = (req, res, next) => {
   res.json({ places });
 };
 
-const createPlace = (req, res, next) => {
+// async is a keyword that tells javascript that this function will return a promise
+// no more throw new Error() in async function
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // console.log(errors);
-    throw new HttpError("Invalid inputs passed, please check your data.", 422);
+    // throw new HttpError("Invalid inputs passed, please check your data.", 422);
+    return next(new HttpError("Invalid inputs passed, please check your data.", 422));
   }
 
-  const { title, description, coordinates, address, creator } = req.body;
+  const { title, description, address, creator } = req.body;
+
+  // convert the address to coordinates
+  // returns if the address is not valid
+  let coordinates;
+  try {
+    coordinates = await getCoordsForAddress(address);
+  } catch (error) {
+    return next(error);
+  }
+
   // const title = req.body.title; 의 줄임말
   const createdPlace = {
     id: uuid.v4(),
