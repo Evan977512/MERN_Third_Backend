@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 // to make sure that each piece of information we add to the database is unique.
 // This helps us avoid mistakes and keep our information organized.
-const uniqueValidator = require("mongoose-unique-validator");
+// const uniqueValidator = require("mongoose-unique-validator");
 
 const Schema = mongoose.Schema;
 
@@ -13,7 +13,7 @@ const userSchema = new Schema({
   places: { type: String, required: true }, // we will fix it later more dynamically
 });
 
-userSchema.plugin(uniqueValidator);
+// userSchema.plugin(uniqueValidator);
 
 // "User" defines the name of the collection
 module.exports = mongoose.model("User", userSchema);
