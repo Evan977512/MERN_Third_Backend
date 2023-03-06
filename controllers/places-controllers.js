@@ -1,21 +1,11 @@
 // uuid package == generate unique id
 const uuid = require("uuid");
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
-
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire tate Building",
-    description: "One of the most famous  place in the world!",
-    location: { lat: 40.784474, lng: -73.9871516 },
-    address: "wow this is the address New York, NY 10001",
-    creator: "u1",
-  },
-];
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid; // { pid: "p1" }
@@ -141,18 +131,30 @@ const updatePlace = async (req, res, next) => {
   res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
-const deletePlace = (req, res, next) => {
+const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
+  // console.log("placeId: ", placeId);
 
-  // function that throws an error if the placeId is not found
-  if (!DUMMY_PLACES.find((p) => p.id === placeId)) {
-    throw new HttpError("Could not find a place for that id", 404);
+  let place;
+  try {
+    // findById() is a mongoose method that returns a promise
+    place = await Place.findById(placeId);
+    // console.log("place: ", place);
+  } catch (err) {
+    const error = new HttpError("Something went wrong, could not delete place.", 500);
+    return next(error);
   }
 
-  console.log("placeId: ", placeId);
-  // filter() returns a new array with the elements that pass the test implemented by the provided function.
-  DUMMY_PLACES = DUMMY_PLACES.filter((p) => p.id !== placeId);
-  res.status(200).json({ message: "Deleted place." });
+  try {
+    // remove() is a mongoose method that removes the data from the database
+    await place.deleteOne();
+  } catch (err) {
+    // throw err;
+    const error = new HttpError("cannot remove the place... try again later.", 500);
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Delete place." });
 };
 
 exports.getPlaceById = getPlaceById;
