@@ -39,14 +39,20 @@ const getPlaceById = async (req, res, next) => {
 // function getPlaceById() { ... }
 // OR
 // const getPlaceById = function() { ... }
-const getPlacesByUserId = (req, res, next) => {
+const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  const places = DUMMY_PLACES.filter((p) => {
-    return p.creator === userId;
-  });
+  let places;
+  try {
+    // find method does not return promise, it returns an array
+    // If you want to return promise from find method, you can use exec() method
+    places = await Place.find({ creator: userId });
+  } catch (error) {
+    const err = new HttpError("Fetching places failed, please try again later.", 500);
+    return next(err);
+  }
 
   if (!places || places.length === 0) {
-    //  return res.status(404).json({ message: 'Could not find a place for the provided user id' });
+    // return res.status(404).json({ message: 'Could not find a place for the provided user id' });
     // const error = new Error("Could not find a place for the provided uid " + userId);
     // error.code = 404;
     // return next(error); // this will reach the next error handling middleware.
