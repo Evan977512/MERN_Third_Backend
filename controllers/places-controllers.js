@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
+const Place = require("../models/place");
 
 let DUMMY_PLACES = [
   {
@@ -16,27 +17,28 @@ let DUMMY_PLACES = [
   },
 ];
 
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid; // { pid: "p1" }
-  // console.log("placeId: ", placeId);
-  const place = DUMMY_PLACES.find((p) => {
-    console.log("p: ", p);
-    return p.id === placeId; // it has to return true
-  });
+  let place;
+  try {
+    place = await Place.findById(placeId);
+  } catch (error) {
+    const err = new HttpError("Something went wrong, could not find a place.", 500);
+    return next(err);
+  }
 
   if (!place) {
     // 404 error response
     // return res.status(404).json({ message: 'Place not found' });
-    throw new HttpError("Could not find a place for the provided id", 404);
+    const error = new HttpError("Could not find a place for the provided id", 404);
+    return next(error);
   }
-  res.json({ place }); // > {place} => {place: place}
-  console.log("placeId: ", placeId);
+  res.json({ place: place.toObject({ getters: true }) }); // > {place} => {place: place}
 };
 
 // function getPlaceById() { ... }
 // OR
 // const getPlaceById = function() { ... }
-
 const getPlacesByUserId = (req, res, next) => {
   const userId = req.params.uid;
   const places = DUMMY_PLACES.filter((p) => {
@@ -75,21 +77,29 @@ const createPlace = async (req, res, next) => {
   }
 
   // const title = req.body.title; 의 줄임말
-  const createdPlace = {
-    id: uuid.v4(),
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinates,
     address,
+    location: coordinates,
+    image: "https://knowyourmeme.com/photos/1297938",
     creator,
-  };
+  });
 
-  DUMMY_PLACES.push(createdPlace); // add to the dummy data
-
+  try {
+    // .save is a mongoose method that saves the data to the database
+    // it returns a promise so we can use await here to wait for the promise to be resolved
+    await createdPlace.save();
+  } catch (err) {
+    const error = new HttpError("Creating place failed, please try again.", 500);
+    // next(error); // we should add this next(error) to stop our code from running
+    // if we don't have error, the code execution would continue to the next line
+    return next(error);
+  }
   res.status(201).json({ place: createdPlace });
 };
 
-const updatePlaceById = (req, res, next) => {
+const updatePlace = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // console.log(errors);
@@ -109,7 +119,7 @@ const updatePlaceById = (req, res, next) => {
   res.status(200).json({ place: updatedPlace }); // return the updated object
 };
 
-const deletePlaceById = (req, res, next) => {
+const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
 
   // function that throws an error if the placeId is not found
@@ -126,5 +136,5 @@ const deletePlaceById = (req, res, next) => {
 exports.getPlaceById = getPlaceById;
 exports.getPlacesByUserId = getPlacesByUserId;
 exports.createPlace = createPlace;
-exports.updatePlaceById = updatePlaceById;
-exports.deletePlaceById = deletePlaceById;
+exports.updatePlace = updatePlace;
+exports.deletePlace = deletePlace;

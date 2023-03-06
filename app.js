@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
+const port = process.env.PORT || 5000;
 
 const app = express();
 
@@ -31,7 +32,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect("mongodb+srv://emdwlekr:rladudcks91@cluster0.wuba1f8.mongodb.net/places?retryWrites=true&w=majority")
   .then(() => {
-    app.listen(5001);
+    app.listen(port);
+    console.log(`Server is running on port ${port}`);
   })
   .catch((err) => {
     console.log(err);
