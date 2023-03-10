@@ -14,7 +14,7 @@ async function getCoordsForAddress(address) {
   );
 
   const data = response.data;
-  console.log("DATA: ", data);
+  // console.log("DATA: ", data);
 
   // if there is no data or the status is ZERO_RESULTS
   if (!data || data.status === "ZERO_RESULTS") {

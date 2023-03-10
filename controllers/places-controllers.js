@@ -32,24 +32,25 @@ const getPlaceById = async (req, res, next) => {
 // const getPlaceById = function() { ... }
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  let places;
+
+  let userWithPlaces;
   try {
-    // find method does not return promise, it returns an array
-    // If you want to return promise from find method, you can use exec() method
-    places = await Place.find({ creator: userId });
-  } catch (error) {
-    const err = new HttpError("Fetching places failed, please try again later.", 500);
-    return next(err);
+    // populate() method is a mongoose method that allows us to populate the places array == ~에 살다/채우다
+    userWithPlaces = await User.findById(userId).populate("places");
+  } catch (err) {
+    const error = new HttpError("Fetching places failed, please try again later", 500);
+    return next(error);
+  }
+  // console.log("userWithPlaces: ", userWithPlaces);
+  // console.log(Array.isArray(userWithPlaces));
+
+  if (!userWithPlaces || userWithPlaces.places.length === 0) {
+    return next(new HttpError("Could not find places for the provided user id.", 404));
   }
 
-  if (!places || places.length === 0) {
-    // return res.status(404).json({ message: 'Could not find a place for the provided user id' });
-    // const error = new Error("Could not find a place for the provided uid " + userId);
-    // error.code = 404;
-    // return next(error); // this will reach the next error handling middleware.
-    return next(new HttpError("Could not find a place for the provided user id", 404));
-  }
-  res.json({ places: places.map((place) => place.toObject({ getters: true })) });
+  res.json({
+    places: userWithPlaces.places.map((place) => place.toObject({ getters: true })),
+  });
 };
 
 // async is a keyword that tells javascript that this function will return a promise
