@@ -31,7 +31,9 @@ const signup = async (req, res, next) => {
   console.log("errors: ", errors);
   if (!errors.isEmpty()) {
     // console.log(errors);
-    return next(new HttpError("Invalid inputs passed, please check your data.", 422));
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
   }
 
   console.log(req.body);
@@ -41,12 +43,18 @@ const signup = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (error) {
-    const err = new HttpError("Signing up failed, please try again later.", 500);
+    const err = new HttpError(
+      "Signing up failed, please try again later.",
+      500
+    );
     return next(err);
   }
 
   if (existingUser) {
-    const error = new HttpError("User exists already, please login instead.", 422);
+    const error = new HttpError(
+      "User exists already, please login instead.",
+      422
+    );
     return next(error);
   }
 
@@ -73,16 +81,29 @@ const signup = async (req, res, next) => {
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   // post request has body and headers
   const { email, password } = req.body;
 
   const identifiedUser = DUMMY_USERS.find((u) => u.email === email);
 
-  // validate email and password
-  if (!identifiedUser || identifiedUser.password !== password) {
-    // 401 means that authentication failed
-    throw new HttpError("Could not find user, credentials not available", 401);
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (error) {
+    const err = new HttpError(
+      "Logging in failed, please try again later.",
+      500
+    );
+    return next(err);
+  }
+
+  if (existingUser || existingUser.password != password) {
+    const error = new HttpError(
+      "Invalid credentials, could not log you in.",
+      401
+    );
+    return next(error);
   }
 
   res.json({ message: "Logged in!!" });
