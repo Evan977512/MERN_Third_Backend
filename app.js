@@ -11,6 +11,15 @@ const app = express();
 
 app.use(bodyParser.json());
 
+// CORS configuration middleware
+app.use((req, res, next) => {
+  // attach headers to the all response
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-control-Allow-Headers", "Origin, X-requested-With, Content-Type, Acceept, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+  next();
+});
+
 // Create routes
 app.use("/api/places", placesRoutes); // => /api/places/...만 되도록 설정해보자
 app.use("/api/users", usersRoutes);
@@ -30,7 +39,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect("mongodb+srv://emdwlekr:rladudcks91@cluster0.wuba1f8.mongodb.net/places?retryWrites=true&w=majority")
+  .connect("mongodb+srv://emdwlekr:rladudcks91@cluster0.wuba1f8.mongodb.net/mern_third?retryWrites=true&w=majority")
   .then(() => {
     app.listen(port);
     console.log(`Server is running on port ${port}`);
