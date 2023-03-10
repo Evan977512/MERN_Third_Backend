@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
+const User = require("../models/user");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid; // { pid: "p1" }
@@ -82,10 +83,40 @@ const createPlace = async (req, res, next) => {
     creator,
   });
 
+  // check if the user exists
+  let user;
+
+  try {
+    user = await User.findById(creator);
+  } catch (error) {
+    const err = new HttpError("Creating place failed, please try again.", 500);
+    return next(err);
+  }
+
+  if (!user) {
+    const error = new HttpError("Could not find user for provided id.", 404);
+    return next(error);
+  }
+  console.log(user);
+
   try {
     // .save is a mongoose method that saves the data to the database
     // it returns a promise so we can use await here to wait for the promise to be resolved
-    await createdPlace.save();
+    // await createdPlace.save();
+
+    // mongoose transaction -> if one of the operation fails, the other operations will be rolled back
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+
+    // need to push the place id to the user's places array
+    // push() method does not return a promise, so we don't need to use await here
+    // push() only adds the id to the array, not the whole place object
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+
+    // if everything is successful, commit the transaction
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError("Creating place failed, please try again.", 500);
     // next(error); // we should add this next(error) to stop our code from running
