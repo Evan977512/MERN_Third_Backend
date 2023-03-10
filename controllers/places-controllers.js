@@ -9,7 +9,7 @@ const Place = require("../models/place");
 const User = require("../models/user");
 
 const getPlaceById = async (req, res, next) => {
-  const placeId = req.params.pid; // { pid: "p1" }
+  const placeId = req.params.pid;
   let place;
   try {
     place = await Place.findById(placeId);
@@ -19,8 +19,6 @@ const getPlaceById = async (req, res, next) => {
   }
 
   if (!place) {
-    // 404 error response
-    // return res.status(404).json({ message: 'Place not found' });
     const error = new HttpError("Could not find a place for the provided id", 404);
     return next(error);
   }
@@ -44,6 +42,7 @@ const getPlacesByUserId = async (req, res, next) => {
   // console.log("userWithPlaces: ", userWithPlaces);
   // console.log(Array.isArray(userWithPlaces));
 
+  // if (!place || place.length === 0) {
   if (!userWithPlaces || userWithPlaces.places.length === 0) {
     return next(new HttpError("Could not find places for the provided user id.", 404));
   }
