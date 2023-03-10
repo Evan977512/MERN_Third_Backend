@@ -13,8 +13,17 @@ const DUMMY_USERS = [
   },
 ];
 
-const getUsers = (req, res, next) => {
-  res.status(200).json({ users: DUMMY_USERS });
+// returns all the users stored in DB
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    // -password means that we don't want to return the password
+    users = await User.find({}, "-password");
+  } catch (error) {
+    const err = new HttpError("Fetching users failed, please try again later.", 500);
+    return err;
+  }
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 const signup = async (req, res, next) => {
