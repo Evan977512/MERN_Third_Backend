@@ -164,21 +164,38 @@ const updatePlace = async (req, res, next) => {
 
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
-  // console.log("placeId: ", placeId);
+  console.log("placeId: ", placeId);
 
   let place;
   try {
     // findById() is a mongoose method that returns a promise
-    place = await Place.findById(placeId);
+    // populate() is a mongoose method that returns the whole object
+    place = await Place.findById(placeId).populate("creator");
     // console.log("place: ", place);
   } catch (err) {
     const error = new HttpError("Something went wrong, could not delete place.", 500);
     return next(error);
   }
 
+  // check if the place exists
+  if (!place) {
+    const error = new HttpError("Could not find place for this id.", 404);
+    return next(error);
+  }
+
   try {
-    // remove() is a mongoose method that removes the data from the database
-    await place.deleteOne();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.deleteOne({ session: sess });
+
+    // access the creator of the place
+    place.creator.places.pull(place);
+
+    // save new creator data
+    await place.creator.save({ session: sess });
+
+    // if everything is successful, commit the transaction
+    await sess.commitTransaction();
   } catch (err) {
     // throw err;
     const error = new HttpError("cannot remove the place... try again later.", 500);
