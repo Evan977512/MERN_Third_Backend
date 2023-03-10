@@ -31,30 +31,22 @@ const signup = async (req, res, next) => {
   console.log("errors: ", errors);
   if (!errors.isEmpty()) {
     // console.log(errors);
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
+    return next(new HttpError("Invalid inputs passed, please check your data.", 422));
   }
 
   console.log(req.body);
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (error) {
-    const err = new HttpError(
-      "Signing up failed, please try again later.",
-      500
-    );
+    const err = new HttpError("Signing up failed, please try again later.", 500);
     return next(err);
   }
 
   if (existingUser) {
-    const error = new HttpError(
-      "User exists already, please login instead.",
-      422
-    );
+    const error = new HttpError("User exists already, please login instead.", 422);
     return next(error);
   }
 
@@ -63,7 +55,8 @@ const signup = async (req, res, next) => {
     email,
     image: "https://knowyourmeme.com/photos/1297938",
     password,
-    places,
+    // [] means that we want to store an array of strings
+    places: [],
   });
 
   // save user
@@ -91,18 +84,12 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (error) {
-    const err = new HttpError(
-      "Logging in failed, please try again later.",
-      500
-    );
+    const err = new HttpError("Logging in failed, please try again later.", 500);
     return next(err);
   }
 
   if (existingUser || existingUser.password != password) {
-    const error = new HttpError(
-      "Invalid credentials, could not log you in.",
-      401
-    );
+    const error = new HttpError("Invalid credentials, could not log you in.", 401);
     return next(error);
   }
 

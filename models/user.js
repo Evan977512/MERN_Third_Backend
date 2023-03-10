@@ -10,7 +10,9 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true }, // "unique" enhaces the performance of the database
   password: { type: String, required: true, minlength: 6 },
   image: { type: String, required: true },
-  places: { type: String, required: true }, // we will fix it later more dynamically
+  // "Place" -> the name of PlaceSchema
+  // [] -> User can have multiple places so we use an array
+  places: [{ type: mongoose.Types.ObjectId, required: true, ref: "Place" }],
 });
 
 // userSchema.plugin(uniqueValidator);

@@ -11,7 +11,7 @@ const placeSchema = new Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
-  creator: { type: String, required: true },
+  creator: { type: mongoose.Types.ObjectId, required: true, ref: "User" }, // "User" -> the name of UserSchema
 });
 
 // Place is a name of the collection in the database -> becomes plural (==Places)
