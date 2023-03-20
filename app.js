@@ -5,7 +5,9 @@ const mongoose = require("mongoose");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
-const port = process.env.PORT || 5000;
+const dotenv = require("dotenv");
+dotenv.config();
+const port = process.env.PORT || 5009;
 
 const app = express();
 

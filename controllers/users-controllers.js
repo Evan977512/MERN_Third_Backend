@@ -44,9 +44,8 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name,
     email,
-    image: "https://knowyourmeme.com/photos/1297938",
+    image: "https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg",
     password,
-    // [] means that we want to store an array of strings
     places: [],
   });
 
