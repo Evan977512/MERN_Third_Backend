@@ -10,19 +10,21 @@ const User = require("../models/user");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
+
   let place;
   try {
     place = await Place.findById(placeId);
-  } catch (error) {
-    const err = new HttpError("Something went wrong, could not find a place.", 500);
-    return next(err);
+  } catch (err) {
+    const error = new HttpError("Something went wrong, could not find a place.", 500);
+    return next(error);
   }
 
   if (!place) {
-    const error = new HttpError("Could not find a place for the provided id", 404);
+    const error = new HttpError("Could not find place for the provided id.", 404);
     return next(error);
   }
-  res.json({ place: place.toObject({ getters: true }) }); // > {place} => {place: place}
+
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 // function getPlaceById() { ... }
@@ -31,35 +33,38 @@ const getPlaceById = async (req, res, next) => {
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
+  // let places;
   let userWithPlaces;
   try {
     // populate() method is a mongoose method that allows us to populate the places array == ~에 살다/채우다
     userWithPlaces = await User.findById(userId).populate("places");
   } catch (err) {
-    const error = new HttpError("Fetching places failed, please try again later", 500);
+    const error = new HttpError(
+      "Fetching places failed, please try again later.",
+      500
+      // console.log("userWithPlaces: ", userWithPlaces);
+      // console.log(Array.isArray(userWithPlaces));
+    );
     return next(error);
   }
-  // console.log("userWithPlaces: ", userWithPlaces);
-  // console.log(Array.isArray(userWithPlaces));
 
-  // if (!place || place.length === 0) {
+  // if (!places || places.length === 0) {
   if (!userWithPlaces || userWithPlaces.places.length === 0) {
     return next(new HttpError("Could not find places for the provided user id.", 404));
   }
 
-  res.json({
-    places: userWithPlaces.places.map((place) => place.toObject({ getters: true })),
-  });
+  res.json({ places: userWithPlaces.places.map((place) => place.toObject({ getters: true })) });
 };
-
 // async is a keyword that tells javascript that this function will return a promise
 // no more throw new Error() in async function
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    // console.log(errors);
-    // throw new HttpError("Invalid inputs passed, please check your data.", 422);
-    return next(new HttpError("Invalid inputs passed, please check your data.", 422));
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+      // console.log(errors);
+      // throw new HttpError("Invalid inputs passed, please check your data.", 422);
+    );
   }
 
   const { title, description, address, creator } = req.body;
@@ -86,18 +91,18 @@ const createPlace = async (req, res, next) => {
 
   // check if the user exists
   let user;
-
   try {
     user = await User.findById(creator);
-  } catch (error) {
-    const err = new HttpError("Creating place failed, please try again.", 500);
-    return next(err);
+  } catch (err) {
+    const error = new HttpError("Creating place failed, please try again.", 500);
+    return next(error);
   }
 
   if (!user) {
     const error = new HttpError("Could not find user for provided id.", 404);
     return next(error);
   }
+
   console.log(user);
 
   try {
@@ -130,10 +135,8 @@ const createPlace = async (req, res, next) => {
 const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    // console.log(errors);
     return next(new HttpError("Invalid inputs passed, please check your data.", 422));
   }
-
   // const title = req.body.title;
   const { title, description } = req.body;
   const placeId = req.params.pid; // pid is the name of the parameter {/:pid}
