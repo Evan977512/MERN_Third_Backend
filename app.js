@@ -50,6 +50,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
+  // .connect("mongodb+srv://emdwlekr:rladudcks91@cluster0.wuba1f8.mongodb.net/mern_third?retryWrites=true&w=majority", {
   .connect("mongodb+srv://emdwlekr:rladudcks91@cluster0.wuba1f8.mongodb.net/mern_third?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,

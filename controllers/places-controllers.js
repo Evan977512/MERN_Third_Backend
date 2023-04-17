@@ -1,5 +1,6 @@
 // uuid package == generate unique id
 const uuid = require("uuid");
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 
@@ -84,8 +85,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg", // => File Upload module, will be replaced with real image url
+    image: req.file.path,
     creator,
   });
 
@@ -183,9 +183,12 @@ const deletePlace = async (req, res, next) => {
 
   // check if the place exists
   if (!place) {
-    const error = new HttpError("Could not find place for this id.", 404);
+    const error = new HttpError("Could not find place for this id.", 500);
     return next(error);
   }
+
+  // image delete
+  const imagePath = place.image;
 
   try {
     const sess = await mongoose.startSession();
@@ -205,6 +208,10 @@ const deletePlace = async (req, res, next) => {
     const error = new HttpError("cannot remove the place... try again later.", 500);
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Delete place." });
 };
