@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 
 // write all the logic to validate an incoming request for its token.
 module.exports = (req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return next();
+  } // if the request is an OPTIONS request, we don't want to do anything
+
   // check wether we have a token
   // and if we have a token, we need to check if it is valid
   // prefer Header because it does not affect URL and keeps it cleaner
