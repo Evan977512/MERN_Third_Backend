@@ -3,12 +3,16 @@ const { check } = require("express-validator");
 
 const placesControllers = require("../controllers/places-controllers");
 const fileUpload = require("../middleware/file-upload");
+const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
 router.get("/:pid", placesControllers.getPlaceById);
 
 router.get("/user/:uid", placesControllers.getPlacesByUserId);
+
+// in order to protect 3 routes below, we need to use the middleware
+router.use(checkAuth);
 
 /**
  * express-validator is a middleware that can be used to validate the incoming request data.
