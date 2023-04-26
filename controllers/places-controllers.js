@@ -193,6 +193,12 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  // check if the user is authorized to delete the place
+  if (place.creator.id !== req.userData.userId) {
+    const err = new HttpError("You are not allowed to delete this place.", 401); // 401 is an authorization error
+    return next(err);
+  }
+
   // image delete
   const imagePath = place.image;
 
