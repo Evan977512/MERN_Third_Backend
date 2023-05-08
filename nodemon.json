@@ -1,0 +1,9 @@
+{
+  "env": {
+    "DB_USER": "emdwlekr",
+    "DB_PASSWORD": "Rladudcks91",
+    "DB_NAME": "mern_third",
+    "GOOGLD_API_KEY": "AIzaSyB1pWjcaSMz7Y4FVOrVhawuUmYwNMMoQmM",
+    "JWT_KEY": "megasecret_dont_share"
+  }
+}

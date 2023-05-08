@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new Error("Authentication failed!");
     }
-    const decodedToken = jwt.verify(token, "megasecret_dont_share"); // validating the token
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY); // validating the token
     req.userData = { userId: decodedToken.userId }; // we can add data to the request object
     next(); // if the token is valid, we can call next() to continue the request
   } catch (err) {
