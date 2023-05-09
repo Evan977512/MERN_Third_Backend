@@ -3,7 +3,7 @@
     "DB_USER": "emdwlekr",
     "DB_PASSWORD": "Rladudcks91",
     "DB_NAME": "mern_third",
-    "GOOGLD_API_KEY": "AIzaSyB1pWjcaSMz7Y4FVOrVhawuUmYwNMMoQmM",
+    "GOOGLE_API_KEY": "AIzaSyA3ggUiIbf1eQhARCstr0LrXZUHL5ChDwc",
     "JWT_KEY": "megasecret_dont_share"
   }
 }
