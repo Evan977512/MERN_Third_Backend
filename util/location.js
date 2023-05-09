@@ -27,6 +27,4 @@ async function getCoordsForAddress(address) {
   const coordinates = data.results[0].geometry.location;
   return coordinates;
 }
-//ready for deployemt
-
 module.exports = getCoordsForAddress;
