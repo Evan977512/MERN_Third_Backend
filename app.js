@@ -12,8 +12,6 @@ require("dotenv").config();
 
 const app = express();
 
-const port = process.env.PORT || 5002;
-
 app.use(bodyParser.json());
 
 // image handler middleware
@@ -65,8 +63,8 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(port);
-    console.log(`Server is running on ${port}`);
+    app.listen(process.env.PORT || 5001);
+    console.log(`Server is running on port ${process.env.PORT || 5001}`);
   })
   .catch((err) => {
     console.log(err);
