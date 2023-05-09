@@ -50,17 +50,20 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect("mongodb+srv://emdwlekr:Rladudcks91@cluster0.wuba1f8.mongodb.net/mern_third?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true, // Use createIndexes instead of collection.ensureIndex
-    writeConcern: {
-      // Use writeConcern instead of top-level w, wtimeout, j, and fsync
-      w: "majority",
-      j: true,
-      wtimeout: 1000,
-    },
-  })
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.wuba1f8.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true, // Use createIndexes instead of collection.ensureIndex
+      writeConcern: {
+        // Use writeConcern instead of top-level w, wtimeout, j, and fsync
+        w: "majority",
+        j: true,
+        wtimeout: 1000,
+      },
+    }
+  )
   .then(() => {
     app.listen(port);
     console.log(`Server is running on ${port}`);
