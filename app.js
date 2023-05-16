@@ -37,7 +37,7 @@ app.use((error, req, res, next) => {
   // image error handling
   if (req.file) {
     fs.unlink(req.file.path, () => {
-      console.log("Image deleted!");
+      // console.log("Image deleted!");
     });
   }
   if (res.headerSent) {

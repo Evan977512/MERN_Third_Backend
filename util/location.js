@@ -11,9 +11,10 @@ async function getCoordsForAddress(address) {
   // it is a package for sending Http requests from frontend to backend
   // but we can also use it to send requests from backend to backend or from backend to another bacakend server.
   const response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${
+      process.env.GOOGLE_API_KEY
+    }`
   );
-
   const data = response.data;
   console.log("DATA: ", data);
 

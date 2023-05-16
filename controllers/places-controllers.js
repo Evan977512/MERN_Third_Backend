@@ -173,6 +173,7 @@ const updatePlace = async (req, res, next) => {
 };
 
 const deletePlace = async (req, res, next) => {
+  console.log("DELETE PLACE");
   const placeId = req.params.pid;
   console.log("placeId: ", placeId);
 
